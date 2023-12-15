@@ -42,8 +42,91 @@ class Line:
         )
         canvas.pack()
 
+class Cell:
+    def __init__( 
+            self,
+            x1,
+            x2,
+            y1,
+            y2,
+            win,
+            has_left_wall = True,
+            has_right_wall = True,
+            has_top_wall = True,
+            has_bottom_wall = True
+        ):
+        self.has_left_wall = has_left_wall
+        self.has_right_wall = has_right_wall
+        self.has_top_wall = has_top_wall
+        self.has_bottom_wall = has_bottom_wall
+        self._x1 = x1
+        self._y1 = y1
+        self._x2 = x2
+        self._y2 = y2
+        self._win = win
+
+    def draw(self):
+        top_left_point = Point(self._x1, self._y1)
+        top_right_point = Point(self._x2, self._y1)
+        bottom_left_point = Point(self._x1, self._y2)
+        bottom_right_point = Point(self._x2, self._y2)
+        
+
+        if self.has_left_wall:
+            self._win.draw_line(Line(top_left_point, bottom_left_point), "black")
+        if self.has_right_wall:
+            self._win.draw_line(Line(top_right_point, bottom_right_point), "black")
+        if self.has_top_wall:
+            self._win.draw_line(Line(top_left_point, top_right_point), "black")
+        if self.has_bottom_wall:
+            self._win.draw_line(Line(bottom_left_point, bottom_right_point), "black")
+    
+    def draw_move(self, to_cell, undo=False):
+        line_color = "red"
+        if undo:
+            line_color = "gray"
+        middle_y1 = (self._y1 + self._y2)/2
+        middle_y2 = (to_cell._y1 + to_cell._y2)/2
+        start_point = Point(self._x1, middle_y1)
+        end_point = Point(to_cell._x2, middle_y2)
+
+        self._win.draw_line(Line(start_point, end_point), line_color)
+
+
+class Maze:
+    def __init__(
+        self,
+        x1,
+        y1,
+        num_rows,
+        num_cols,
+        cell_size_x,
+        cell_size_y,
+        win,
+    ):
+        self._x1 = x1
+        self._y1 = y1
+        self._num_rows = num_rows
+        self._num_cols = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
+        self._win = win
+        self._cells = []
+        self._create_cells()
+    
+        
+
+
 win = Window(800, 600)
+cell1 = Cell(110, 150, 110, 150, win, True, False)
+cell2 = Cell(150, 190, 110, 150, win, False)
+
+cell1.draw()
+cell2.draw()
+cell1.draw_move(cell2)
+
 win.draw_line(Line(Point(20, 50), Point(50, 50)), "red")
 win.draw_line(Line(Point(50, 50), Point(100, 100)), "red")
 win.draw_line(Line(Point(100, 100), Point(100, 500)), "red")
+
 win.wait_for_close()
