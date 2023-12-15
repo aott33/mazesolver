@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+import time
 
 class Window:
     def __init__(self, width, height):
@@ -114,19 +115,42 @@ class Maze:
         self._cells = []
         self._create_cells()
     
+    def _create_cells(self):
+        for i in range(0, self._num_cols):
+            col_list = []
+            for j in range(0, self._num_rows):
+                x1, x2, y1, y2 = self._calc_cell(i, j)
+                cell = Cell(x1, x2, y1, y2, self._win)
+                cell.draw()
+                self._animate()
+                col_list.append(cell)
+            self._cells.append(col_list)
+    
+    def _calc_cell(self, i, j):
+        x1 = (self._cell_size_x * i) + self._x1
+        x2 = x1 + self._cell_size_x
+        y1 = (self._cell_size_y * j) + self._y1
+        y2 = y1 + self._cell_size_y
+        return x1, x2, y1, y2
+    
+    def _animate(self):
+        self._win.redraw()
+        time.sleep(0.05)
         
 
 
 win = Window(800, 600)
-cell1 = Cell(110, 150, 110, 150, win, True, False)
-cell2 = Cell(150, 190, 110, 150, win, False)
+maze = Maze(30, 30, 10, 10, 50, 50, win)
 
-cell1.draw()
-cell2.draw()
-cell1.draw_move(cell2)
+# cell1 = Cell(110, 150, 110, 150, win, True, False)
+# cell2 = Cell(150, 190, 110, 150, win, False)
 
-win.draw_line(Line(Point(20, 50), Point(50, 50)), "red")
-win.draw_line(Line(Point(50, 50), Point(100, 100)), "red")
-win.draw_line(Line(Point(100, 100), Point(100, 500)), "red")
+# cell1.draw()
+# cell2.draw()
+# cell1.draw_move(cell2)
+
+# win.draw_line(Line(Point(20, 50), Point(50, 50)), "red")
+# win.draw_line(Line(Point(50, 50), Point(100, 100)), "red")
+# win.draw_line(Line(Point(100, 100), Point(100, 500)), "red")
 
 win.wait_for_close()
