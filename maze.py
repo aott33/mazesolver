@@ -1,5 +1,6 @@
 from tkinter import Tk, BOTH, Canvas
 import time
+import random
 
 class Window:
     def __init__(self, width, height):
@@ -54,7 +55,8 @@ class Cell:
             has_left_wall = True,
             has_right_wall = True,
             has_top_wall = True,
-            has_bottom_wall = True
+            has_bottom_wall = True,
+            visited = False
         ):
         self.has_left_wall = has_left_wall
         self.has_right_wall = has_right_wall
@@ -65,6 +67,7 @@ class Cell:
         self._x2 = x2
         self._y2 = y2
         self._win = win
+        self.visited = visited
 
     def draw(self):
         top_left_point = Point(self._x1, self._y1)
@@ -112,6 +115,7 @@ class Maze:
         cell_size_x,
         cell_size_y,
         win=None,
+        seed=None
     ):
         self._x1 = x1
         self._y1 = y1
@@ -120,9 +124,14 @@ class Maze:
         self._cell_size_x = cell_size_x
         self._cell_size_y = cell_size_y
         self._win = win
+        self._seed = seed
         self._cells = []
         self._create_cells()
         self._break_entrance_and_exit()
+
+        if seed != None:
+            random.seed(seed)
+        
     
     def _create_cells(self):
         for i in range(0, self._num_cols):
@@ -142,7 +151,41 @@ class Maze:
         self._cells[0][0].draw()
         self._animate()
         self._cells[self._num_cols-1][self._num_rows-1].draw()
-        
+
+    def _break_walls_r(self, i, j):
+        self._cells[i][j].visited = True
+
+        while True:
+            to_visit = []
+            directions = 0
+            if i - 1 > 0 and not self._cells[i - 1][j].visited:
+                to_visit.append([i - 1, j])
+                directions += 1
+            if j - 1 > 0 and not self._cells[i][j - 1].visited:
+                to_visit.append([i, j - 1])
+                directions += 1
+            if i + 1 < self._num_cols and not self._cells[i + 1][j].visited:
+                to_visit.append([i + 1, j])
+                directions += 1
+            if j + 1 < self._num_rows and not self._cells[i][j + 1].visited:
+                to_visit.append([i + 1, j])
+                directions += 1
+
+            if directions == 0:
+                self._cells[i][j].draw()
+                return
+            
+            next_cell = to_visit[random.randint(0, len(to_visit))]
+
+            if next_cell[0] < i:
+                pass
+            elif next_cell[0] > i:
+                pass
+            elif next_cell[1] < j:
+                pass
+            elif next_cell[1] > j:
+                pass
+
     
     def _calc_cell(self, i, j):
         x1 = (self._cell_size_x * i) + self._x1
